@@ -14318,12 +14318,12 @@ var LOCATION_LIST = [
     "height": 699.9511
   },
   {
-    "id": "43.054_-2.566",
+    "id": "43.131589_-2.062296",
     "community": "País Vasco",
     "province": "Guipúzcoa",
     "name": "Ibarra",
-    "longitude": -2.566,
-    "latitude": 43.054,
+    "longitude": -2.062296,
+    "latitude": 43.131589,
     "population": 4335,
     "height": 381.8797
   },
@@ -21938,12 +21938,12 @@ var LOCATION_LIST = [
     "height": 120.5571
   },
   {
-    "id": "37.88327_-4.784959",
+    "id": "37.681404_-4.853313",
     "community": "Andalucía",
     "province": "Córdoba",
     "name": "Victoria (La)",
-    "longitude": -4.784959,
-    "latitude": 37.88327,
+    "longitude": -4.853313,
+    "latitude": 37.681404,
     "population": 2197,
     "height": 122.8182
   },
@@ -30438,12 +30438,12 @@ var LOCATION_LIST = [
     "height": 823.1027
   },
   {
-    "id": "37.28611_-3.008889",
+    "id": "36.929105_-3.582358",
     "community": "Andalucía",
     "province": "Granada",
     "name": "Valle (El)",
-    "longitude": -3.008889,
-    "latitude": 37.28611,
+    "longitude": -3.582358,
+    "latitude": 36.929105,
     "population": 1143,
     "height": 1245.152
   },
@@ -41108,12 +41108,12 @@ var LOCATION_LIST = [
     "height": 810.6698
   },
   {
-    "id": "40.96731_-5.671496",
+    "id": "41.073236_-5.567579",
     "community": "Castilla León",
     "province": "Salamanca",
     "name": "Vellés (La)",
-    "longitude": -5.671496,
-    "latitude": 40.96731,
+    "longitude": -5.567579,
+    "latitude": 41.073236,
     "population": 565,
     "height": 809.2722
   },
