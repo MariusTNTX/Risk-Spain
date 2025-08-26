@@ -1,21 +1,3 @@
-/* EXCEL
-``.trim().split('\n').map(row => {
-    let data = row.split('\t').map(d => d.trim());
-    let latitude = parseFloat(data[4].replace(',', '.'));
-    let longitude = parseFloat(data[3].replace(',', '.'));
-    return {
-      id: latitude + "_" + longitude,
-      community: data[0], 
-      province: data[1], 
-      name: data[2], 
-      longitude, 
-      latitude, 
-      population: parseInt(data[5]),
-      height: parseFloat(data[6].replace(',', '.'))
-    };
-});
-*/
-
 var LOCATION_LIST = [
   {
     "id": "40.41669_-3.700346",
