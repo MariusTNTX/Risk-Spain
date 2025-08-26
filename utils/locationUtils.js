@@ -55,12 +55,6 @@ function renderLocationCircle(location) {
   });
 }
 
-function renderLinkLine(link) {
-  const coords = link.locations.map(x => x.split('_').map(y => parseFloat(y)));
-  link.distance = STORAGE.map.distance(...coords);
-  link.line = L.polyline(coords, { color: 'red', weight: 2 }).addTo(STORAGE.map);
-}
-
 function createOrDeleteLink(locA, locB) {
   let linkToDelete = LINK_LIST.find(link => link.locations.includes(locA.id) && link.locations.includes(locB.id));
   if(linkToDelete) {
@@ -71,9 +65,15 @@ function createOrDeleteLink(locA, locB) {
     }
     return;
   }
-  const link = { locations: [locA.id, locB.id] };
+  const link = { locations: [locA.id, locB.id], isMaritim: true };
   renderLinkLine(link);
   LINK_LIST.push(link);
   renderLocationCircle(locA);
   renderLocationCircle(locB);
+}
+
+function renderLinkLine(link) {
+  const coords = link.locations.map(x => x.split('_').map(y => parseFloat(y)));
+  link.distance = STORAGE.map.distance(...coords);
+  link.line = L.polyline(coords, { color: link.isMaritim ? 'limegreen' : 'red', weight: 2 }).addTo(STORAGE.map);
 }

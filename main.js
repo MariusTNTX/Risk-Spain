@@ -3,12 +3,12 @@ let errorDiv = document.getElementById('error');
 try {
   /* RENDER MAP */
   STORAGE.map = L.map('map').setView([40.1, -2.2], 6);
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  /* L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
     attribution: '© OpenStreetMap'
-  }).addTo(STORAGE.map);
-  /* L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors, SRTM | © OpenTopoMap'
   }).addTo(STORAGE.map); */
+  L.tileLayer('https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png', {
+    attribution: '© OpenStreetMap contributors, SRTM | © OpenTopoMap'
+  }).addTo(STORAGE.map);
 
   /* RENDER LINKS */
   LINK_LIST.forEach(link => renderLinkLine(link));
