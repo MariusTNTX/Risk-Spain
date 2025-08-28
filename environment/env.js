@@ -18,5 +18,6 @@ var ENV = {
     landColor: 'gray', 
     seaColor: 'steelblue',
     weight: 2
-  }
+  },
+  milisecondsPerTic: 1000
 }

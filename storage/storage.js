@@ -1,4 +1,6 @@
 var STORAGE = { 
   map: null,
-  linkingStart: null 
+  linkingStart: null,
+  currentTic: 0,
+  eventList: {}
 };

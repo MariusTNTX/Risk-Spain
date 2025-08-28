@@ -29,7 +29,7 @@ var STATE_LIST = [
   },
   {
     "name": "Liga de Tartessos",
-    "color": "#be4600",
+    "color": "#615200",
     "provinces": [
       "Sevilla",
       "Cádiz",
@@ -41,8 +41,8 @@ var STATE_LIST = [
     ]
   },
   {
-    "name": "Sultanato de Almulhacén",
-    "color": "#615200",
+    "name": "Califato de Almulhacén",
+    "color": "#be4600",
     "provinces": [
       "Málaga",
       "Murcia",

@@ -4,6 +4,7 @@ var BBDD = {
   states: STATE_LIST,
   locations: LOCATION_LIST,
   links: LINK_LIST,
+  relationships: [],
   init: () => {
     BBDD.communities.forEach(community => {
       community.provinces = community.provinces.map(provinceName => {
@@ -24,6 +25,16 @@ var BBDD = {
         let provinceObject = BBDD.provinces.find(province => province.name === provinceName);
         provinceObject.state = state;
         return provinceObject;
+      });
+      state.relationships = [];
+      BBDD.states.map(targetState => {
+        if(state !== targetState){
+          let relationship = { score: 100, states: [ state, targetState ] };
+          state.relationships.push(relationship);
+          if(!BBDD.relationships.some(r => r.states.includes(state) && r.states.includes(targetState))){
+            BBDD.relationships.push(relationship);
+          }
+        }
       });
       state.locations = [];
       state.totalPopulation = 0;
