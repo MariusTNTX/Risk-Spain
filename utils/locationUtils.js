@@ -4,7 +4,10 @@ function renderLocationCircle(location) {
   }
   const popupContent = `
     <div class="popup-content">
-      <b>Municipio</b>: ${location.name}<br/>
+      <b>Territorio</b>: ${location.name}<br/>
+      <b>Estado</b>: ${location.currentState.name}<br/>
+      <b>Tropas</b>: ${location.currentTroops} / ${location.defaultTroops}<br/>
+      <hr>
       <b>Provincia</b>: ${location.province.name}<br/>
       <b>Com. Aut.</b>: ${location.community.name}<br/>
       <b>Población</b>: ${location.population.toLocaleString('es-ES')} hab.<br/>
