@@ -14,6 +14,8 @@ var BBDD = {
     
     BBDD.provinces.forEach(province => {
       province.community = BBDD.communities.find(community => community.name === province.community);
+      province.totalPopulation = 0;
+      province.totalDefaultTroops = 0;
       return province;
     });
 
@@ -23,12 +25,20 @@ var BBDD = {
         provinceObject.state = state;
         return provinceObject;
       });
+      state.totalPopulation = 0;
+      state.totalDefaultTroops = 0;
       return state;
     });
     
     BBDD.locations.forEach(location => {
       location.community = BBDD.communities.find(community => community.name === location.community);
       location.province = BBDD.provinces.find(province => province.name === location.province);
+      let defaultTroops = Math.round(location.population / 1000);
+      location.defaultTroops = defaultTroops > 1 ? defaultTroops : 1;
+      location.province.totalPopulation += location.population;
+      location.province.totalDefaultTroops += location.defaultTroops;
+      location.province.state.totalPopulation += location.population;
+      location.province.state.totalDefaultTroops += location.defaultTroops;
       BBDD.links.forEach(link => {
         let index = link.locations.findIndex(id => id === location.id);
         if(index >= 0){

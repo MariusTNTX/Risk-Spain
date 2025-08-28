@@ -17,8 +17,9 @@ try {
 
   document.getElementById('print')?.addEventListener('click', () => {
     console.log('BBDD.communities', BBDD.communities);
-    console.log('BBDD.provinces', BBDD.provinces);
-    console.log('BBDD.states', BBDD.states);
+    console.log('BBDD.provinces', [...BBDD.provinces].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
+    console.log('BBDD.locations', [...BBDD.locations].sort((a, b) => b.population - a.population));
+    console.log('BBDD.states', [...BBDD.states].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
     console.log('LINK_LIST', BBDD.links.map(link => {
       let result = { ...link };
       result.locations = result.locations.map(l => l.id);
