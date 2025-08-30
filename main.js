@@ -16,6 +16,7 @@ try {
   });
 
   document.getElementById('print')?.addEventListener('click', () => {
+    console.log('STORAGE.eventList', STORAGE.eventList);
     console.log('BBDD.communities', BBDD.communities);
     console.log('BBDD.provinces', [...BBDD.provinces].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
     console.log('BBDD.locations', [...BBDD.locations].sort((a, b) => b.population - a.population));

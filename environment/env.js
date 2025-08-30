@@ -19,5 +19,11 @@ var ENV = {
     seaColor: 'steelblue',
     weight: 2
   },
-  milisecondsPerTic: 1000
+  milisecondsPerTic: 1000,
+  troopsPerInhabitant: 1 / 500,
+  minDefaultTroopsByLocation: 5,
+  maxTroopsPerDefaultTroop: 2,
+  newTroopsPerTroop: 1 / 1000,
+  ticsPerTroopDeployment: 24,
+  minZoomToRenderLabels: 10
 }

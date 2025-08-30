@@ -6,7 +6,7 @@ function renderLocationCircle(location) {
     <div class="popup-content">
       <b>Territorio</b>: ${location.name}<br/>
       <b>Estado</b>: ${location.currentState.name}<br/>
-      <b>Tropas</b>: ${location.currentTroops} / ${location.defaultTroops}<br/>
+      <b>Tropas</b>: ${location.currentTroops} / ${location.maxTroops}<br/>
       <hr>
       <b>Provincia</b>: ${location.province.name}<br/>
       <b>Com. Aut.</b>: ${location.community.name}<br/>
