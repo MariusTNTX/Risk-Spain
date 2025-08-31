@@ -23,7 +23,11 @@ var ENV = {
   troopsPerInhabitant: 1 / 500,
   minDefaultTroopsByLocation: 5,
   maxTroopsPerDefaultTroop: 2,
-  newTroopsPerTroop: 1 / 1000,
   ticsPerTroopDeployment: 24,
-  minZoomToRenderLabels: 10
+  newTroopsPerTroop: 1 / 1000,
+  ticsPerRelationshipUpdate: 2,
+  maxRelationshipScore: 100,
+  inflexRelationshipScore: 50,
+  averagePeaceRelationshipScore: 75,
+  averageWarRelationshipScore: 25,
 }

@@ -1,27 +1,58 @@
+let addEvent = (extraTics, functionToExecute) => {
+  let eventFunctions = STORAGE.eventList['e' + (STORAGE.currentTic + extraTics)];
+  if(Array.isArray(eventFunctions)) {
+    STORAGE.eventList['e' + (STORAGE.currentTic + extraTics)].push(functionToExecute);
+  } else {
+    STORAGE.eventList['e' + (STORAGE.currentTic + extraTics)] = [functionToExecute];
+  }
+}
+
 let createNewTroopDeployment = () => {
   let totalTroops = BBDD.locations.reduce((total, location) => total += location.currentTroops, 0);
-  console.log('totalTroops', totalTroops);
   let newTroops = [];
   for(let i = 0; i < totalTroops * ENV.newTroopsPerTroop; i++){
     newTroops.push(Math.floor(Math.random() * totalTroops) + 1);
   }
-  console.log('newTroops', newTroops);
+  console.log(`${totalTroops} + ${newTroops.length} = ${totalTroops + newTroops.length}`);
   let currentTroopsAccumulated = 0;
   BBDD.locations.map(location => {
     currentTroopsAccumulated += location.currentTroops;
     let originalNewTroopLength = newTroops.length;
     newTroops = newTroops.filter(troopNumber => troopNumber > currentTroopsAccumulated);
-    if(originalNewTroopLength !== newTroops.length){
+    if(location.currentTroops < location.maxTroops && originalNewTroopLength !== newTroops.length){
       location.currentTroops += originalNewTroopLength - newTroops.length;
       renderLocationCircle(location);
-      console.log(`Add ${originalNewTroopLength - newTroops.length} troops to location`, location);
     }
     return location;
   });
-  STORAGE.eventList['e' + (STORAGE.currentTic + ENV.ticsPerTroopDeployment)] = [createNewTroopDeployment];
+  addEvent(ENV.ticsPerTroopDeployment, createNewTroopDeployment);
 };
 
-/* STORAGE.eventList['e' + (STORAGE.currentTic + ENV.ticsPerTroopDeployment)] = [createNewTroopDeployment]; */
+let updateRelationships = () => {
+  BBDD.relationships.forEach(relationship => {
+    let originalScore = relationship.score;
+    if(!!Math.round(Math.random()) && originalScore < 100) {
+      relationship.score++;
+    } else if(originalScore > 0) {
+      relationship.score--;
+    }
+
+    if(relationship.hasCommonFrontier && relationship.score < ENV.inflexRelationshipScore && originalScore >= ENV.inflexRelationshipScore) {
+      relationship.score = ENV.averageWarRelationshipScore;
+      relationship.inWar = true;
+      console.log(`A war has been declared between ${relationship.states[0].name} and ${relationship.states[1].name}:`, relationship);
+    } else if(relationship.hasCommonFrontier && relationship.score >= ENV.inflexRelationshipScore && originalScore < ENV.inflexRelationshipScore) {
+      relationship.score = ENV.averagePeaceRelationshipScore;
+      relationship.inWar = false;
+      console.log(`Peace has been declared between ${relationship.states[0].name} and ${relationship.states[1].name}:`, relationship);
+    }
+    return relationship;
+  });
+  addEvent(ENV.ticsPerRelationshipUpdate, updateRelationships);
+};
+
+addEvent(ENV.ticsPerTroopDeployment, createNewTroopDeployment);
+addEvent(ENV.ticsPerRelationshipUpdate, updateRelationships);
 
 let intervalId = setInterval(() => {
   try {
