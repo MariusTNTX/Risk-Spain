@@ -5,6 +5,8 @@ try {
   STORAGE.map = L.map('map').setView([40.1, -2.2], 6);
   L.tileLayer(ENV.tileLayer.link, { attribution: ENV.tileLayer.attribution }).addTo(STORAGE.map);
 
+  BBDD.init();
+  
   /* RENDER LINKS */
   BBDD.links.forEach(link => renderLinkLine(link));
 
@@ -15,19 +17,16 @@ try {
     console.log('map event', e);
   });
 
+  initialiceTimer();
+
   document.getElementById('print')?.addEventListener('click', () => {
     console.log('STORAGE.eventList', STORAGE.eventList);
-    console.log('BBDD.communities', BBDD.communities);
-    console.log('BBDD.provinces', [...BBDD.provinces].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
-    console.log('BBDD.locations', [...BBDD.locations].sort((a, b) => b.population - a.population));
-    console.log('BBDD.states', [...BBDD.states].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
-    console.log('BBDD.relationships', BBDD.relationships);
-    console.log('LINK_LIST', BBDD.links.map(link => {
-      let result = { ...link };
-      result.locations = result.locations.map(l => l.id);
-      delete result.line;
-      return result;
-    }));
+    console.log('BBDD.communities', BBDD.communities.getAll());
+    console.log('BBDD.provinces', [...BBDD.provinces.getAll()].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
+    console.log('BBDD.locations', [...BBDD.locations.getAll()].sort((a, b) => b.population - a.population));
+    console.log('BBDD.states', [...BBDD.states.getAll()].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
+    console.log('BBDD.relationships', BBDD.relationships.getAll());
+    console.log('BBDD.links', BBDD.links.getAll());
   });
 } catch (error) {
   errorDiv.innerHTML = error.stack;

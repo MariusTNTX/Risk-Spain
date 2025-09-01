@@ -1,4 +1,4 @@
-let addEvent = (extraTics, functionToExecute) => {
+function addEvent(extraTics, functionToExecute) {
   let eventFunctions = STORAGE.eventList['e' + (STORAGE.currentTic + extraTics)];
   if(Array.isArray(eventFunctions)) {
     STORAGE.eventList['e' + (STORAGE.currentTic + extraTics)].push(functionToExecute);
@@ -7,7 +7,7 @@ let addEvent = (extraTics, functionToExecute) => {
   }
 }
 
-let createNewTroopDeployment = () => {
+var createNewTroopDeployment = () => {
   let totalTroops = BBDD.locations.reduce((total, location) => total += location.currentTroops, 0);
   let newTroops = [];
   for(let i = 0; i < totalTroops * ENV.newTroopsPerTroop; i++){
@@ -28,7 +28,7 @@ let createNewTroopDeployment = () => {
   addEvent(ENV.ticsPerTroopDeployment, createNewTroopDeployment);
 };
 
-let updateRelationships = () => {
+var updateRelationships = () => {
   BBDD.relationships.forEach(relationship => {
     let originalScore = relationship.score;
     if(!!Math.round(Math.random()) && originalScore < 100) {
@@ -53,17 +53,3 @@ let updateRelationships = () => {
 
 addEvent(ENV.ticsPerTroopDeployment, createNewTroopDeployment);
 addEvent(ENV.ticsPerRelationshipUpdate, updateRelationships);
-
-let intervalId = setInterval(() => {
-  try {
-    let eventsToExecute = STORAGE.eventList['e' + STORAGE.currentTic];
-    if(!!eventsToExecute && eventsToExecute.length) {
-      console.log('eventsToExecute at ', STORAGE.currentTic, eventsToExecute);
-      eventsToExecute.map(executeEvent => executeEvent());
-      delete STORAGE.eventList['e' + STORAGE.currentTic];
-    }
-    STORAGE.currentTic++;
-  } catch (error) {
-    clearInterval(intervalId);
-  }
-}, ENV.milisecondsPerTic);
