@@ -5,9 +5,7 @@ class DBCommunities extends DBTable {
 
   init(){
     this.list.forEach(community => {
-      community.provinces = community.provinces.map(provinceName => {
-        return BBDD.provinces.find(province => province.name === provinceName);
-      });
+      community.initProvincesFromDB();
       return community;
     });
   }

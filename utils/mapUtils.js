@@ -44,18 +44,18 @@ function renderLocationCircle(location) {
 }
 
 function createOrDeleteLink(locA, locB) {
-  let linkToDelete = BBDD.links.find(link => link.locations.includes(locA) && link.locations.includes(locB));
+  let linkToDelete = DB.links.find(link => link.locations.includes(locA) && link.locations.includes(locB));
   if(linkToDelete) {
     STORAGE.map.removeLayer(linkToDelete.line);
-    let index = BBDD.links.indexOf(linkToDelete);
+    let index = DB.links.indexOf(linkToDelete);
     if (index !== -1) {
-      BBDD.links.splice(index, 1);
+      DB.links.splice(index, 1);
     }
     return;
   }
   const link = { locations: [locA, locB], isMaritim: false };
   renderLinkLine(link);
-  BBDD.links.push(link);
+  DB.links.push(link);
   renderLocationCircle(locA);
   renderLocationCircle(locB);
 }

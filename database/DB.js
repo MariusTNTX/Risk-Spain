@@ -1,4 +1,4 @@
-class BBDD {
+class DB {
   static communities = new DBCommunities();
   static provinces = new DBProvinces();
   static states = new DBStates();

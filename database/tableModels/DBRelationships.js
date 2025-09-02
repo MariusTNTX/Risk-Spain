@@ -1,15 +1,22 @@
 class DBRelationships extends DBTable {
   constructor(){
-    super([]);
+    super(RELATIONSHIP_LIST.map(rawObj => new DBRelationship(rawObj)));
   }
 
   init(){
     this.list.forEach(relationship => {
-      relationship.hasCommonFrontier = BBDD.links.some(link => 
-        link.locations.some(l => l.currentState.name === relationship.states[0].name) && 
-        link.locations.some(l => l.currentState.name === relationship.states[1].name)
-      );
+      relationship.initStatesRelationshipFromDB();
       return relationship;
+    });
+  }
+
+  getRawData(){
+    return this.list.map(relationship => {
+      let result = { ...relationship };
+      result.states = result.states.map(s => s.name);
+      delete result.score;
+      delete result.inWar;
+      return result;
     });
   }
 }

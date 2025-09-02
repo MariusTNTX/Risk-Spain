@@ -8,14 +8,14 @@ function addEvent(extraTics, functionToExecute) {
 }
 
 var createNewTroopDeployment = () => {
-  let totalTroops = BBDD.locations.reduce((total, location) => total += location.currentTroops, 0);
+  let totalTroops = DB.locations.reduce((total, location) => total += location.currentTroops, 0);
   let newTroops = [];
   for(let i = 0; i < totalTroops * ENV.newTroopsPerTroop; i++){
     newTroops.push(Math.floor(Math.random() * totalTroops) + 1);
   }
   console.log(`${totalTroops} + ${newTroops.length} = ${totalTroops + newTroops.length}`);
   let currentTroopsAccumulated = 0;
-  BBDD.locations.map(location => {
+  DB.locations.map(location => {
     currentTroopsAccumulated += location.currentTroops;
     let originalNewTroopLength = newTroops.length;
     newTroops = newTroops.filter(troopNumber => troopNumber > currentTroopsAccumulated);
@@ -29,7 +29,7 @@ var createNewTroopDeployment = () => {
 };
 
 var updateRelationships = () => {
-  BBDD.relationships.forEach(relationship => {
+  DB.relationships.forEach(relationship => {
     let originalScore = relationship.score;
     if(!!Math.round(Math.random()) && originalScore < 100) {
       relationship.score++;
