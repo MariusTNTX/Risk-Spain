@@ -1,11 +1,14 @@
 class DBState {
   color;
   name;
-  provinces;
 
-  locations = [];
+  /* One to Many */ provinces;
+  
+  /* Many to Many */ relationships = [];
+  
+  /* CALC */ locations = [];
+
   maxTroops = 0;
-  relationships = [];
   totalDefaultTroops = 0;
   totalPopulation = 0;
   
@@ -15,22 +18,22 @@ class DBState {
     this.provinces = Array.isArray(rawObj?.provinces) ? rawObj.provinces : [];
   }
 
-  initProvincesFromDB(){
-    this.provinces = this.provinces.map(provinceName => {
-      let province = DB.provinces.find(p => p.name === provinceName);
-      province.state = this;
-      return province;
+  addDBProvince(province){
+    let index = this.provinces.findIndex(p => p === province.name);
+    if(index >= 0){
+      this.provinces[index] = province;
+    }
+  }
+
+  calcProperties(){
+    this.locations = this.provinces.reduce((result, province) => {
+      result.push(...province.locations);
+      return result;
+    }, []);
+    this.locations.map(location => {
+      this.maxTroops += location.maxTroops;
+      this.totalDefaultTroops += location.defaultTroops;
+      this.totalPopulation += location.population;
     });
-  }
-
-  addDataFromDBRelationship(relationship){
-    this.relationships.push(relationship);
-  }
-
-  addDataFromDBLocation(location){
-    this.totalPopulation += location.population;
-    this.totalDefaultTroops += location.defaultTroops;
-    this.maxTroops += location.maxTroops;
-    this.locations.push(location);
   }
 }

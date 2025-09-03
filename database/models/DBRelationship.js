@@ -1,18 +1,20 @@
 class DBRelationship {
-  hasCommonFrontier;
-  states;
   score;
-
+  
+  /* Many to Many */ states;
+  
+  hasCommonFrontier = false;
   inWar = false;
   
   constructor(rawObj) {
-    this.hasCommonFrontier = typeof(rawObj?.hasCommonFrontier) === 'boolean' ? rawObj.hasCommonFrontier : null;
     this.states = Array.isArray(rawObj.states) ? rawObj.states : [];
     this.score = Math.floor(Math.random() * ENV.inflexRelationshipScore) + (ENV.maxRelationshipScore - ENV.inflexRelationshipScore + 1);
   }
 
-  initStatesRelationshipFromDB(){
-    DB.states.find(s => s.name === this.states[0]).addDataFromDBRelationship(this);
-    DB.states.find(s => s.name === this.states[1]).addDataFromDBRelationship(this);
+  calcProperties(){
+    this.hasCommonFrontier = DB.links.some(link => 
+      link.locations.some(location => location.province.state === this.states[0]) &&
+      link.locations.some(location => location.province.state === this.states[1])
+    );
   }
 }

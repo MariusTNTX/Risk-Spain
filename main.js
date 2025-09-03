@@ -6,18 +6,6 @@ try {
   L.tileLayer(ENV.tileLayer.link, { attribution: ENV.tileLayer.attribution }).addTo(STORAGE.map);
 
   DB.init();
-  
-  /* RENDER LINKS */
-  DB.links.forEach(link => renderLinkLine(link));
-
-  /* RENDER LOCATIONS */
-  DB.locations.forEach(location => renderLocationCircle(location, STORAGE));
-
-  STORAGE.map.on('click', (e) => {
-    console.log('map event', e);
-  });
-
-  initialiceTimer();
 
   document.getElementById('print')?.addEventListener('click', () => {
     console.log('STORAGE.eventList', STORAGE.eventList);
@@ -28,6 +16,18 @@ try {
     console.log('DB.relationships', DB.relationships.getAll());
     console.log('DB.links', DB.links.getAll());
   });
+  
+  /* RENDER LINKS */
+  DB.links.map(link => renderLinkLine(link));
+
+  /* RENDER LOCATIONS */
+  DB.locations.map(location => renderLocationCircle(location, STORAGE));
+
+  STORAGE.map.on('click', (e) => {
+    console.log('map event', e);
+  });
+
+  initialiceTimer();
 } catch (error) {
   errorDiv.innerHTML = error.stack;
 }

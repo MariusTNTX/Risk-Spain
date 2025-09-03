@@ -9,7 +9,7 @@ function renderLocationCircle(location) {
       <b>Tropas</b>: ${location.currentTroops} / ${location.maxTroops}<br/>
       <hr>
       <b>Provincia</b>: ${location.province.name}<br/>
-      <b>Com. Aut.</b>: ${location.community.name}<br/>
+      <b>Com. Aut.</b>: ${location.province.community.name}<br/>
       <b>Población</b>: ${location.population.toLocaleString('es-ES')} hab.<br/>
       <b>Altitud</b>: ${location.height.toFixed(0)} m<br/>
       <b>Coordenadas</b>: ${location.latitude.toFixed(5)}, ${location.longitude.toFixed(5)}

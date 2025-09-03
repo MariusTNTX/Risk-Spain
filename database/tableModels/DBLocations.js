@@ -3,12 +3,15 @@ class DBLocations extends DBTable {
     super(LOCATION_LIST.map(rawObj => new DBLocation(rawObj)));
   }
 
-  init(){
+  setLocationProvinceRelations(){
     this.list.forEach(location => {
-      location.initCommunityFromDB();
-      location.initProvinceFromDB();
-      location.initCurrentStateFromDB();
+      location.province = DB.provinces.find(province => province.name === location.province);
+      location.province.locations.push(location);
       return location;
     });
+  }
+
+  calcProperties(){
+    this.list.map(location => location.calcProperties());
   }
 }

@@ -1,7 +1,8 @@
 class DBCommunity {
   color;
   name;
-  provinces;
+
+  /* One to Many */ provinces;
   
   constructor(rawObj) {
     this.color = typeof(rawObj?.color) === 'string' ? rawObj.color : null;
@@ -9,9 +10,10 @@ class DBCommunity {
     this.provinces = Array.isArray(rawObj?.provinces) ? rawObj.provinces : null;
   }
 
-  initProvincesFromDB(){
-    this.provinces = this.provinces.map(provinceName => {
-      return DB.provinces.find(province => province.name === provinceName);
-    });
+  addDBProvince(province){
+    let index = this.provinces.findIndex(p => p === province.name);
+    if(index >= 0){
+      this.provinces[index] = province;
+    }
   }
 }

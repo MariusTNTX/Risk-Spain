@@ -1,22 +1,23 @@
 class DBLocation {
-  community;
   height;
   id;
   latitude;
   longitude;
   name;
   population;
-  province;
+
+  /* Many to One */ province;
+  
+  /* Many to Many */ links = [];
+  
+  /* CALC */ currentState = null;
   
   circle = null;
-  currentState = null;
   currentTroops = 0;
   defaultTroops = 0;
-  links = [];
   maxTroops = 0;
   
   constructor(rawObj) {
-    this.community = typeof(rawObj?.community) === 'string' ? rawObj.community : null;
     this.height = typeof(rawObj?.height) === 'number' ? rawObj.height : null;
     this.id = typeof(rawObj?.id) === 'string' ? rawObj.id : null;
     this.latitude = typeof(rawObj?.latitude) === 'number' ? rawObj.latitude : null;
@@ -31,21 +32,7 @@ class DBLocation {
     this.maxTroops = this.defaultTroops * ENV.maxTroopsPerDefaultTroop;
   }
 
-  initCommunityFromDB(){
-    this.community = DB.communities.find(community => community.name === this.community);
-  }
-
-  initProvinceFromDB(){
-    this.province = DB.provinces.find(province => province.name === this.province);
-    this.province.addDataFromDBLocation(this);
-  }
-
-  initCurrentStateFromDB(){
+  calcProperties(){
     this.currentState = this.province.state;
-    this.currentState.addDataFromDBLocation(this);
-  }
-
-  addLinkFrom(link){
-    this.links.push(link);
   }
 }

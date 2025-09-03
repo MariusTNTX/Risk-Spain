@@ -7,11 +7,15 @@ class DB {
   static relationships = new DBRelationships();
 
   static init() {
-    this.communities.init();
-    this.provinces.init();
-    this.states.init();
-    this.locations.init();
-    this.links.init();
-    this.relationships.init();
+    this.links.setLinkLocationRelations();
+    this.relationships.setRelationshipStateRelations();
+    this.provinces.setProvinceCommunityRelations();
+    this.provinces.setProvinceStateRelations();
+    this.locations.setLocationProvinceRelations();
+
+    this.locations.calcProperties();
+    this.provinces.calcProperties();
+    this.relationships.calcProperties();
+    this.states.calcProperties();
   }
 }

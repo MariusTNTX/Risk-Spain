@@ -22,6 +22,9 @@ class DBTable {
   some(callback){
     return this.list.some(callback);
   }
+  filter(callback){
+    return this.list.filter(callback);
+  }
   reduce(...data){
     return this.list.reduce(...data);
   }

@@ -3,9 +3,12 @@ class DBLinks extends DBTable {
     super(LINK_LIST.map(rawObj => new DBLink(rawObj)));
   }
 
-  init() {
-    DB.links.forEach(link => {
-      link.initLocationsFromDB();
+  setLinkLocationRelations() {
+    this.list.forEach(link => {
+      [0, 1].map(index => {
+        link.locations[index] = DB.locations.find(l => l.id === link.locations[index]);
+        link.locations[index].links.push(link);
+      });
       return link;
     });
   }

@@ -1,13 +1,27 @@
 class DBRelationships extends DBTable {
   constructor(){
-    super(RELATIONSHIP_LIST.map(rawObj => new DBRelationship(rawObj)));
+    super(
+      STATE_LIST.reduce((result, originState) => {
+        STATE_LIST.map(targetState => {
+          if(originState !== targetState && !result.some(r => r.states.includes(originState) && r.states.includes(targetState))){
+            result.push(new DBRelationship({ states: [originState, targetState] }));
+          }
+        });
+        return result;
+      }, [])
+    );
   }
-
-  init(){
+  
+  setRelationshipStateRelations(){
     this.list.forEach(relationship => {
-      relationship.initStatesRelationshipFromDB();
+      relationship.states = DB.states.filter(state => relationship.states.some(s => s.name === state.name));
+      relationship.states.map(state => state.relationships.push(relationship));
       return relationship;
     });
+  }
+
+  calcProperties(){
+    this.list.map(relationship => relationship.calcProperties());
   }
 
   getRawData(){
