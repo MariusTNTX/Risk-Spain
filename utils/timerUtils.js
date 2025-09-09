@@ -1,4 +1,5 @@
 function initialiceTimer() {
+  addInitialEvents();
   let intervalId = setInterval(() => {
     try {
       let eventsToExecute = STORAGE.eventList['e' + STORAGE.currentTic];

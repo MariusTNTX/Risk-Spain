@@ -68,3 +68,11 @@ function renderLinkLine(link) {
     weight: ENV.line.weight 
   }).addTo(STORAGE.map);
 }
+
+function renderStatePolygons(state) {
+  state.currentPolygons.map((polygon, i) => {
+    L.geoJSON(polygon, {
+      style: { color: state.color, weight: 2, fillOpacity: 0.1 }
+    }).addTo(STORAGE.map).bindPopup(`${state.name}${state.currentPolygons.length > 1 ? ` (Zona ${i + 1})` : ''}`);
+  })
+}

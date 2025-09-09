@@ -36759,8 +36759,8 @@ var LOCATION_LIST = [
     "id": "37.26469_-6.926992",
     "province": "Huelva",
     "name": "Granado (El)",
-    "longitude": -6.926992,
-    "latitude": 37.26469,
+    "longitude": -7.416948,
+    "latitude": 37.520575,
     "population": 573,
     "height": 18.32656
   },

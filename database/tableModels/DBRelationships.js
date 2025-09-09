@@ -33,4 +33,9 @@ class DBRelationships extends DBTable {
       return result;
     });
   }
+
+  updateRelationships = () => {
+    this.list.map(relationship => relationship.updateScore());
+    addEvent(ENV.ticsPerRelationshipUpdate, this.updateRelationships);
+  };
 }

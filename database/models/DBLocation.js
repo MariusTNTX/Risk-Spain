@@ -16,6 +16,8 @@ class DBLocation {
   currentTroops = 0;
   defaultTroops = 0;
   maxTroops = 0;
+  underAttack = false;
+  adjacentLocations = [];
   
   constructor(rawObj) {
     this.height = typeof(rawObj?.height) === 'number' ? rawObj.height : null;
@@ -34,5 +36,9 @@ class DBLocation {
 
   calcProperties(){
     this.currentState = this.province.state;
+    this.adjacentLocations = this.links.reduce((locations, link) => {
+      locations.push(link.locations.find(l => l !== this));
+      return locations;
+    }, []);
   }
 }

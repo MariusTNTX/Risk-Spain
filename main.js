@@ -15,13 +15,17 @@ try {
     console.log('DB.states', [...DB.states.getAll()].sort((a, b) => b.totalDefaultTroops - a.totalDefaultTroops));
     console.log('DB.relationships', DB.relationships.getAll());
     console.log('DB.links', DB.links.getAll());
+    console.log('DB.links', DB.links.getRawData());
   });
   
   /* RENDER LINKS */
   DB.links.map(link => renderLinkLine(link));
 
   /* RENDER LOCATIONS */
-  DB.locations.map(location => renderLocationCircle(location, STORAGE));
+  DB.locations.map(location => renderLocationCircle(location));
+
+  /* RENDER POLYGONS */
+  DB.states.map(state => renderStatePolygons(state));
 
   STORAGE.map.on('click', (e) => {
     console.log('map event', e);
