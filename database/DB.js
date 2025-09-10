@@ -5,6 +5,7 @@ class DB {
   static locations = new DBLocations();
   static links = new DBLinks();
   static relationships = new DBRelationships();
+  static armies = new DBArmies();
 
   static init() {
     this.links.setLinkLocationRelations();

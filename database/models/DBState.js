@@ -15,6 +15,7 @@ class DBState {
   currentTargetLocations = [];
   currentLocationAreas = [];
   currentPolygons = [];
+  armies = [];
   
   constructor(rawObj) {
     this.color = typeof(rawObj?.color) === 'string' ? rawObj.color : null;
@@ -96,9 +97,13 @@ class DBState {
 
   getRandomTargetLocation(){
     let relationshipsInWar = this.relationships.filter(r => r.inWar);
+    console.log('getRandomTargetLocation() relationshipsInWar',relationshipsInWar);
     let enemyStates = relationshipsInWar.map(r => r.states.find(s => s !== this));
+    console.log('getRandomTargetLocation() enemyStates',enemyStates);
     let targetLocations = this.currentTargetLocations.filter(l => enemyStates.includes(l.currentState));
-    return targetLocations[Math.floor(Math.random() * (targetLocations.length + 1))];
+    console.log('getRandomTargetLocation() targetLocations',targetLocations);
+    console.log('getRandomTargetLocation() return',targetLocations[Math.floor(Math.random() * (targetLocations.length + 1))]);
+    return targetLocations[Math.floor(Math.random() * targetLocations.length)];
   }
 
   /* WAR METHODS */
@@ -119,6 +124,44 @@ class DBState {
   }
 
   endArmyRecruiting(){}
+
+  recruitArmy(recruitableLocations, armyTroops){
+    let newTroops = [];
+    let recruitDefaultTroops = recruitableLocations.reduce((n, l) => {
+      n += l.defaultTroops;
+      return n;
+    }, 0);
+    for(let i = 0; i < armyTroops; i++){
+      newTroops.push(Math.floor(Math.random() * recruitDefaultTroops) + 1);
+    }
+    let currentTroopsAccumulated = 0;
+    recruitableLocations.map(location => {
+      currentTroopsAccumulated += location.currentTroops;
+      let originalNewTroopLength = newTroops.length;
+      newTroops = newTroops.filter(troopNumber => troopNumber > currentTroopsAccumulated);
+      let recruitTroopNumber = originalNewTroopLength - newTroops.length;
+      if(originalNewTroopLength !== newTroops.length){
+        location.currentTroops = (location.currentTroops - recruitTroopNumber > 0)
+          ? location.currentTroops - recruitTroopNumber
+          : 0;
+        renderLocationCircle(location);
+      }
+      return location;
+    });
+  }
+
+  createNewArmy(departureLocation, targetLocation, troops, routeLocations){
+    const newArmy = new DBArmy({
+      state: this,
+      departureLocation,
+      targetLocation,
+      troops,
+      routeLocations
+    });
+    DB.armies.push(newArmy);
+    this.armies.push(newArmy);
+    renderArmySquare(newArmy);
+  }
 
   setNewArmy = () => {
     try {
@@ -144,10 +187,10 @@ class DBState {
         })?.[0] || null;
         console.log('departureLocation', departureLocation);
         console.log('targetLocation', targetLocation);
-        const routeLinks = getRouteBetween(departureLocation, targetLocation, this.locations);
-        console.log('routeLinks', routeLinks);
-        /* TODO Formar Ejército vacío en origin */
-        /* TODO Trasladar tropas al ejército */
+        const routeLocations = getRouteBetween(departureLocation, targetLocation, this.locations);
+        console.log('routeLocations', routeLocations);
+        this.recruitArmy(recruitableLocations, armyTroops);
+        this.createNewArmy(departureLocation, targetLocation, armyTroops, routeLocations)
         /* TODO Eventos para recorrer la ruta */
         /* TODO Eventos de ataque */
         /* TODO Eventos de próximos ataques */

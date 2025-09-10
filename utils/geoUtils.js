@@ -289,3 +289,25 @@ function getLocationsGeoJSON(locations) {
     coordinates: [coords]
   };
 }
+
+function createSquarePolygon(position, distance) {
+  const meters = distance * 1000;
+  const R = 6378137;
+  const degPerRad = 180 / Math.PI;
+  const deltaLat = (meters / R) * degPerRad;
+  const latRad = position.lat * Math.PI / 180;
+  const deltaLng = (meters / (R * Math.cos(latRad))) * degPerRad;
+  const lat = position.lat;
+  const lng = position.lng;
+  const coords = [[
+    [lng + deltaLng, lat + deltaLat],
+    [lng + deltaLng, lat - deltaLat],
+    [lng - deltaLng, lat - deltaLat],
+    [lng - deltaLng, lat + deltaLat],
+    [lng + deltaLng, lat + deltaLat]
+  ]];
+  return {
+    type: 'Polygon',
+    coordinates: coords
+  };
+}

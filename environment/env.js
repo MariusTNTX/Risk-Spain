@@ -19,6 +19,16 @@ var ENV = {
     seaColor: 'steelblue',
     weight: 2
   },
+  statePolygon: {
+    weight: 2, 
+    fillOpacity: 0.2
+  },
+  armyPolygon: {
+    size: 0.5,
+    color: 'black', 
+    weight: 3, 
+    fillOpacity: 0.3
+  },
   milisecondsPerTic: 1000, /* Milisegundos que dura un tic de juego */
   troopsPerInhabitant: 1 / 500, /* Proporción de tropas por habitantes reales */
   minDefaultTroopsByLocation: 5, /* Tropas minimas por localización (aplicado en municipios pequeños) */

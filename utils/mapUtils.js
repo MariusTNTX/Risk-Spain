@@ -72,7 +72,32 @@ function renderLinkLine(link) {
 function renderStatePolygons(state) {
   state.currentPolygons.map((polygon, i) => {
     L.geoJSON(polygon, {
-      style: { color: state.color, weight: 2, fillOpacity: 0.1 }
-    }).addTo(STORAGE.map).bindPopup(`${state.name}${state.currentPolygons.length > 1 ? ` (Zona ${i + 1})` : ''}`);
+      style: { color: state.color, weight: ENV.statePolygon.weight, fillOpacity: ENV.statePolygon.fillOpacity }
+    }).addTo(STORAGE.map).bindPopup(`
+      <h2>${state.name}</h2>
+      ${
+        state.currentPolygons.length > 1 
+        ? `<h3 style="text-align: center">Zona ${i + 1} de ${state.currentPolygons.length + 1}</h3>` 
+        : ''
+      }
+    `);
   })
+}
+
+function renderArmySquare(army) {
+  const position = army.isBetweenLocations ? army.currentElement.getCenter() : army.currentElement.getLatLng();
+  const distance = Math.sqrt(army.currentTroops) * ENV.armyPolygon.size;
+  const polygon = createSquarePolygon(position, distance);
+  L.geoJSON(polygon, {
+    style: { color: ENV.armyPolygon.color, fillColor: army.state.color, weight: ENV.armyPolygon.weight, fillOpacity: ENV.armyPolygon.fillOpacity }
+  }).addTo(STORAGE.map).bindPopup(`
+    <div class="popup-content">
+      <b>Estado</b>: ${army.state.name}<br/>
+      <b>Enemigo</b>: ${army.enemyState.name}<br/>
+      <b>Tropas</b>: ${army.currentTroops} / ${army.originalTroops}<br/>
+      <b>Origen</b>: ${army.departureLocation.name} (${army.departureLocation.province.name})<br/>
+      <b>Destino Actual</b>: ${army.currentTargetLocation.name} (${army.currentTargetLocation.province.name})<br/>
+      <b>En Batalla</b>: ${army.inBattle ? 'Si' : 'No'}
+    </div>
+  `);
 }
