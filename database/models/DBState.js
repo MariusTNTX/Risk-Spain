@@ -160,41 +160,36 @@ class DBState {
   }
 
   setNewArmy = () => {
-    try {
-      if(this.inWar){
-        const targetLocation = this.getRandomTargetLocation();
-        const neigbourTargetLocationIds = targetLocation.adjacentLocations.filter(l => l.currentState.name === this.name).map(l => l.id);
-        const recruitableLocations = this.currentLocationAreas
-        .filter(a => a.some(l => neigbourTargetLocationIds.includes(l.id)))[0]
-        .filter(l => !l.underAttack && l.currentTroops >= l.maxTroops * ENV.minRecruitableTroopPercent);
-        const maxRecruitableTroops = recruitableLocations.reduce((troops, location) => {
-          troops += location.currentTroops - Math.ceil(location.maxTroops * ENV.minRecruitableTroopPercent);
-          return troops;
-        }, 0);
-        const maxStackableTroops = [...recruitableLocations].sort((a, b) => b.defaultTroops - a.defaultTroops)?.[0]?.defaultTroops || null;
-        const armyTroops = this.getRandomArmyTroops(maxRecruitableTroops, maxStackableTroops);
-        const departurableLocations = recruitableLocations.filter(l => l.defaultTroops >= armyTroops);
-        const departureLocation = [...departurableLocations].sort((a, b) => {
-          let aDistance = STORAGE.map.distance([ targetLocation.latitude, targetLocation.longitude ], [ a.latitude, a.longitude ]);
-          let bDistance = STORAGE.map.distance([ targetLocation.latitude, targetLocation.longitude ], [ b.latitude, b.longitude ]);
-          return aDistance - bDistance;
-        })?.[0] || null;
-        const routeLocations = getRouteBetween(departureLocation, targetLocation, this.locations);
-        const fullRoute = routeLocations.reduce((route, location, i) => {
-          route.push(location);
-          if(i + 1 < routeLocations.length){
-            route.push(location.links.find(link => link.locations.includes(location) && link.locations.includes(routeLocations[i+1])));
-          }
-          return route;
-        }, []);
-        this.recruitArmy(recruitableLocations, armyTroops);
-        this.createNewArmy(departureLocation, targetLocation, armyTroops, fullRoute)
-        /* TODO Eventos de ataque */
-        /* TODO Eventos de próximos ataques */
-        this.initArmyRecruiting();
-      }
-    } catch (error) {
-      console.error(error);
+    if(this.inWar){
+      const targetLocation = this.getRandomTargetLocation();
+      const neigbourTargetLocationIds = targetLocation.adjacentLocations.filter(l => l.currentState.name === this.name).map(l => l.id);
+      const currentAreaLocations = this.currentLocationAreas.filter(a => a.some(l => neigbourTargetLocationIds.includes(l.id)))[0]
+      const recruitableLocations = currentAreaLocations.filter(l => !l.underAttack && l.currentTroops >= l.maxTroops * ENV.minRecruitableTroopPercent);
+      const maxRecruitableTroops = recruitableLocations.reduce((troops, location) => {
+        troops += location.currentTroops - Math.ceil(location.maxTroops * ENV.minRecruitableTroopPercent);
+        return troops;
+      }, 0);
+      const maxStackableTroops = [...recruitableLocations].sort((a, b) => b.defaultTroops - a.defaultTroops)?.[0]?.defaultTroops || null;
+      const armyTroops = this.getRandomArmyTroops(maxRecruitableTroops, maxStackableTroops);
+      const departurableLocations = recruitableLocations.filter(l => l.defaultTroops >= armyTroops);
+      const departureLocation = [...departurableLocations].sort((a, b) => {
+        let aDistance = STORAGE.map.distance([ targetLocation.latitude, targetLocation.longitude ], [ a.latitude, a.longitude ]);
+        let bDistance = STORAGE.map.distance([ targetLocation.latitude, targetLocation.longitude ], [ b.latitude, b.longitude ]);
+        return aDistance - bDistance;
+      })?.[0] || null;
+      const routeLocations = getArmyRoute(targetLocation, currentAreaLocations, (l) => l.defaultTroops >= armyTroops);
+      const fullRoute = routeLocations.reduce((route, location, i) => {
+        route.push(location);
+        if(i + 1 < routeLocations.length){
+          route.push(location.links.find(link => link.locations.includes(location) && link.locations.includes(routeLocations[i+1])));
+        }
+        return route;
+      }, []);
+      this.recruitArmy(recruitableLocations, armyTroops);
+      this.createNewArmy(departureLocation, targetLocation, armyTroops, fullRoute)
+      /* TODO Eventos de ataque */
+      /* TODO Eventos de próximos ataques */
+      this.initArmyRecruiting();
     }
   }
 }

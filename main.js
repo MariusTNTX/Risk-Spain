@@ -1,4 +1,4 @@
-let errorDiv = document.getElementById('error');
+STORAGE.errorDiv = document.getElementById('error');
 
 try {
   /* RENDER MAP */
@@ -35,5 +35,5 @@ try {
   initialiceTimer();
 } catch (error) {
   console.error(error);
-  errorDiv.innerHTML = error.stack;
+  STORAGE.errorDiv.innerHTML += `<div>${error.stack}</div>`;
 }

@@ -43,11 +43,98 @@ class MinHeap {
   isEmpty() { return this.data.length === 0; }
 }
 
-function getRouteBetween(origin, destination, allowedLocations, options = {}) {
-  const { returnLinks = false } = options;
+function getArmyRoute(destination, allowedLocations, isValid) {
+  if (!destination || !Array.isArray(allowedLocations) || typeof isValid !== 'function') return null;
 
+  // Map id -> Location (usamos las referencias de allowedLocations)
+  const idToLocation = new Map();
+  for (const loc of allowedLocations) {
+    if (loc && loc.id != null && !idToLocation.has(loc.id)) {
+      idToLocation.set(loc.id, loc);
+    }
+  }
+  // Asegurar que el destino esté en el mapa
+  if (!idToLocation.has(destination.id)) idToLocation.set(destination.id, destination);
+
+  // Conjunto de ids permitidos
+  const allowedSet = new Set(idToLocation.keys());
+  allowedSet.add(destination.id);
+
+  // Fuentes válidas (las que cumplen isValid)
+  const sourceIds = [];
+  for (const id of allowedSet) {
+    const loc = idToLocation.get(id) || (id === destination.id ? destination : null);
+    if (loc && isValid(loc)) sourceIds.push(id);
+  }
+  if (sourceIds.length === 0) return null;
+
+  // Estructuras Dijkstra
+  const dist = new Map();
+  const prev = new Map(); // id -> prevId
+  for (const id of allowedSet) dist.set(id, Infinity);
+
+  const heap = new MinHeap();
+  for (const sid of sourceIds) {
+    dist.set(sid, 0);
+    heap.push({ id: sid, dist: 0 });
+  }
+
+  const visited = new Set();
+
+  while (!heap.isEmpty()) {
+    const entry = heap.pop();
+    if (!entry) break;
+    const uId = entry.id;
+    const dU = entry.dist;
+
+    if (dU !== dist.get(uId)) continue; // entrada obsoleta
+    if (visited.has(uId)) continue;
+    visited.add(uId);
+
+    if (uId === destination.id) break; // ya llegamos
+
+    const u = idToLocation.get(uId) || (uId === destination.id ? destination : null);
+    if (!u || !Array.isArray(u.links)) continue;
+
+    for (const link of u.links) {
+      if (!link || !Array.isArray(link.locations) || link.locations.length < 2) continue;
+      const locA = link.locations[0], locB = link.locations[1];
+      const v = (locA && locA.id === uId) ? locB : (locB && locB.id === uId ? locA : null);
+      if (!v || v.id == null) continue;
+      if (!allowedSet.has(v.id)) continue;
+
+      const w = Number(link.distance);
+      if (!Number.isFinite(w) || w < 0) continue;
+
+      const alt = dU + w;
+      if (alt < dist.get(v.id)) {
+        dist.set(v.id, alt);
+        prev.set(v.id, uId);
+        heap.push({ id: v.id, dist: alt });
+      }
+    }
+  }
+
+  if (!isFinite(dist.get(destination.id))) return null; // no se alcanzó el destino
+
+  // Reconstrucción del path en términos de locations
+  const pathLocations = [];
+  let curId = destination.id;
+  while (curId != null) {
+    const loc = idToLocation.get(curId) || (curId === destination.id ? destination : null);
+    if (!loc) break;
+    pathLocations.push(loc);
+    if (!prev.has(curId)) break; // llegamos a una source
+    curId = prev.get(curId);
+  }
+
+  pathLocations.reverse(); // de source -> destination
+  return pathLocations;
+}
+
+function getRouteBetween(origin, destination, allowedLocations) {
   if (!origin || !destination) return null;
-  if (origin.id === destination.id) return returnLinks ? [] : [origin];
+  if (origin.id === destination.id) return  [origin];
 
   // Crear mapa auxiliar id → Location (solo las referencias recibidas en allowedLocations)
   const idToLocation = new Map();
@@ -137,22 +224,7 @@ function getRouteBetween(origin, destination, allowedLocations, options = {}) {
   }
   pathLocations.push(origin);
   pathLocations.reverse();
-
-  if (!returnLinks) return pathLocations;
-
-  // reconstrucción como links (también mismas referencias)
-  const pathLinks = [];
-  for (let i = 0; i < pathLocations.length - 1; i++) {
-    const b = pathLocations[i + 1];
-    const rec = prev.get(b.id);
-    if (rec && rec.linkId) {
-      const a = pathLocations[i];
-      const link = a.links.find(l => l.id === rec.linkId);
-      if (!link) return null;
-      pathLinks.push(link);
-    }
-  }
-  return pathLinks;
+  return pathLocations;
 }
 
 function getLocationAreas(locations, options = {}) {
