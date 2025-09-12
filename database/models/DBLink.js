@@ -6,6 +6,7 @@ class DBLink {
   /* Many to Many */ locations;
 
   line = null;
+  currentArmies = [];
   
   constructor(rawObj) {
     this.distance = typeof(rawObj?.distance) === 'number' ? rawObj.distance : null;

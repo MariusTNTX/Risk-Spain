@@ -34,5 +34,6 @@ try {
 
   initialiceTimer();
 } catch (error) {
+  console.error(error);
   errorDiv.innerHTML = error.stack;
 }

@@ -28,7 +28,6 @@ class DBLocations extends DBTable {
     for(let i = 0; i < this.troopsPerDeployment; i++){
       newTroops.push(Math.floor(Math.random() * this.totalDefaultTroops) + 1);
     }
-    console.log('New troops:', this.troopsPerDeployment);
     let currentTroopsAccumulated = 0;
     this.list.map(location => {
       currentTroopsAccumulated += location.currentTroops;

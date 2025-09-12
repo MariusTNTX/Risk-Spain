@@ -85,10 +85,13 @@ function renderStatePolygons(state) {
 }
 
 function renderArmySquare(army) {
-  const position = army.isBetweenLocations ? army.currentElement.getCenter() : army.currentElement.getLatLng();
+  if(army.polygon){
+    STORAGE.map.removeLayer(army.polygon);
+  }
+  const position = army.currentRouteIndex % 2 ? army.currentElement.getCenter() : army.currentElement.getLatLng();
   const distance = Math.sqrt(army.currentTroops) * ENV.armyPolygon.size;
   const polygon = createSquarePolygon(position, distance);
-  L.geoJSON(polygon, {
+  army.polygon = L.geoJSON(polygon, {
     style: { color: ENV.armyPolygon.color, fillColor: army.state.color, weight: ENV.armyPolygon.weight, fillOpacity: ENV.armyPolygon.fillOpacity }
   }).addTo(STORAGE.map).bindPopup(`
     <div class="popup-content">

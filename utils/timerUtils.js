@@ -10,6 +10,7 @@ function initialiceTimer() {
       }
       STORAGE.currentTic++;
     } catch (error) {
+      console.error(error);
       clearInterval(intervalId);
     }
   }, ENV.milisecondsPerTic);

@@ -97,12 +97,8 @@ class DBState {
 
   getRandomTargetLocation(){
     let relationshipsInWar = this.relationships.filter(r => r.inWar);
-    console.log('getRandomTargetLocation() relationshipsInWar',relationshipsInWar);
     let enemyStates = relationshipsInWar.map(r => r.states.find(s => s !== this));
-    console.log('getRandomTargetLocation() enemyStates',enemyStates);
     let targetLocations = this.currentTargetLocations.filter(l => enemyStates.includes(l.currentState));
-    console.log('getRandomTargetLocation() targetLocations',targetLocations);
-    console.log('getRandomTargetLocation() return',targetLocations[Math.floor(Math.random() * (targetLocations.length + 1))]);
     return targetLocations[Math.floor(Math.random() * targetLocations.length)];
   }
 
@@ -150,24 +146,23 @@ class DBState {
     });
   }
 
-  createNewArmy(departureLocation, targetLocation, troops, routeLocations){
+  createNewArmy(departureLocation, targetLocation, troops, fullRoute){
     const newArmy = new DBArmy({
       state: this,
       departureLocation,
       targetLocation,
       troops,
-      routeLocations
+      fullRoute
     });
     DB.armies.push(newArmy);
     this.armies.push(newArmy);
-    renderArmySquare(newArmy);
+    newArmy.moveArmy();
   }
 
   setNewArmy = () => {
     try {
       if(this.inWar){
         const targetLocation = this.getRandomTargetLocation();
-        console.log(this.name, 'setNewArmy against', targetLocation.currentState.name);
         const neigbourTargetLocationIds = targetLocation.adjacentLocations.filter(l => l.currentState.name === this.name).map(l => l.id);
         const recruitableLocations = this.currentLocationAreas
         .filter(a => a.some(l => neigbourTargetLocationIds.includes(l.id)))[0]
@@ -178,20 +173,22 @@ class DBState {
         }, 0);
         const maxStackableTroops = [...recruitableLocations].sort((a, b) => b.defaultTroops - a.defaultTroops)?.[0]?.defaultTroops || null;
         const armyTroops = this.getRandomArmyTroops(maxRecruitableTroops, maxStackableTroops);
-        console.log('armyTroops', armyTroops);
         const departurableLocations = recruitableLocations.filter(l => l.defaultTroops >= armyTroops);
         const departureLocation = [...departurableLocations].sort((a, b) => {
           let aDistance = STORAGE.map.distance([ targetLocation.latitude, targetLocation.longitude ], [ a.latitude, a.longitude ]);
           let bDistance = STORAGE.map.distance([ targetLocation.latitude, targetLocation.longitude ], [ b.latitude, b.longitude ]);
           return aDistance - bDistance;
         })?.[0] || null;
-        console.log('departureLocation', departureLocation);
-        console.log('targetLocation', targetLocation);
         const routeLocations = getRouteBetween(departureLocation, targetLocation, this.locations);
-        console.log('routeLocations', routeLocations);
+        const fullRoute = routeLocations.reduce((route, location, i) => {
+          route.push(location);
+          if(i + 1 < routeLocations.length){
+            route.push(location.links.find(link => link.locations.includes(location) && link.locations.includes(routeLocations[i+1])));
+          }
+          return route;
+        }, []);
         this.recruitArmy(recruitableLocations, armyTroops);
-        this.createNewArmy(departureLocation, targetLocation, armyTroops, routeLocations)
-        /* TODO Eventos para recorrer la ruta */
+        this.createNewArmy(departureLocation, targetLocation, armyTroops, fullRoute)
         /* TODO Eventos de ataque */
         /* TODO Eventos de próximos ataques */
         this.initArmyRecruiting();

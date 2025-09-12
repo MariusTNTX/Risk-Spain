@@ -18,6 +18,7 @@ class DBLocation {
   maxTroops = 0;
   underAttack = false;
   adjacentLocations = [];
+  currentArmies = [];
   
   constructor(rawObj) {
     this.height = typeof(rawObj?.height) === 'number' ? rawObj.height : null;

@@ -44,5 +44,8 @@ var ENV = {
   maxStateTroopPercentPerArmy: 0.01, /* Proporción máxima de tropas (comparado con las tropas totales) que puede conformar un ejército de una potencia */
   minRecruitingTicPercentPerArmy: 0.1, /* Proporción mínima del tiempo de reclutamiento de tropas para un ejército en comparación con el tiempo que tardaría mediante regeneración natural */
   maxRecruitingTicPercentPerArmy: 0.5, /* Proporción máxima del tiempo de reclutamiento de tropas para un ejército en comparación con el tiempo que tardaría mediante regeneración natural */
-  minRecruitableTroopPercent: 0.1 /* Proporción mínima de las tropas de una localización que no pueden ser reclutadas (destinadas sólo a defensa) */
+  minRecruitableTroopPercent: 0.1, /* Proporción mínima de las tropas de una localización que no pueden ser reclutadas (destinadas sólo a defensa) */
+  armyLandMetersPerTic: 3000, /* Metros terrestres máximos que recorre un ejército por tic */
+  armySeaMetersPerTic: 10000, /* Metros marítimos máximos que recorre un ejército por tic */
+  armyLocationRestTics: 6 /* Tics que ocupa un ejército en descansar cuando pasa por una localización */
 }
