@@ -11,11 +11,12 @@ class DBState {
   maxTroops = 0;
   totalDefaultTroops = 0;
   totalPopulation = 0;
+  armyCount = 0;
   inWar = false;
   currentTargetLocations = [];
   currentLocationAreas = [];
   currentPolygons = [];
-  armies = [];
+  currentArmies = [];
   
   constructor(rawObj) {
     this.color = typeof(rawObj?.color) === 'string' ? rawObj.color : null;
@@ -42,24 +43,44 @@ class DBState {
       this.totalDefaultTroops += location.defaultTroops;
       this.totalPopulation += location.population;
     });
-    this.updateLocationLists();
+    this.updateCurrentAreas();
   }
-  
-  updateLocationLists(){
-    DB.links.map(link => {
-      let index = link.locations.findIndex(l => l.currentState.name === this.name);
-      if(index >= 0 && link.locations[0].currentState.name !== link.locations[1].currentState.name){
-        if(!link.locations[0].currentState.currentTargetLocations.includes(link.locations[1])){
-          link.locations[0].currentState.currentTargetLocations.push(link.locations[1]);
-        }
-        if(!link.locations[1].currentState.currentTargetLocations.includes(link.locations[0])){
-          link.locations[1].currentState.currentTargetLocations.push(link.locations[0]);
-        }
-      }
-    });
+
+  updateCurrentAreas(){
     this.currentLocationAreas = getLocationAreas(this.locations, { ignoreMaritimLinks: true });
     let polygonAreas = getLocationAreas(this.locations, { ignoreMaritimLinks: false });
+    if(this.currentPolygons.length){
+      this.currentPolygons.map(area => area.geoJSON.clearLayers());
+    }
     this.currentPolygons = polygonAreas.map(locationList => getLocationsGeoJSON(locationList)).filter(p => !!p);
+    this.currentPolygons = this.currentPolygons.map(polygon => ({ polygon, geoJSON: null }));
+    renderStatePolygons(this);
+  }
+
+  conquerLocation(location){
+    console.log(`${this.name} conquista ${location.name} a ${location.currentState.name}`);
+    location.currentState = this;
+    this.maxTroops += location.maxTroops;
+    this.totalDefaultTroops += location.defaultTroops;
+    this.totalPopulation += location.population;
+    this.locations.push(location);
+    this.updateCurrentAreas();
+    renderStatePolygons(this);
+    DB.states.updateTargetLocations();
+  }
+  
+  loseLocation(location, newState){
+    console.log(`${this.name} pierde ${location.name} a manos de ${newState.name}`);
+    location.currentState = newState;
+    this.maxTroops -= location.maxTroops;
+    this.totalDefaultTroops -= location.defaultTroops;
+    this.totalPopulation -= location.population;
+    let index = this.locations.findIndex(l => l.id === location.id);
+    if(index >= 0){
+      this.locations.splice(index, 1);
+    }
+    this.updateCurrentAreas();
+    renderStatePolygons(this);
   }
 
   /* GETS */
@@ -115,7 +136,7 @@ class DBState {
   initArmyRecruiting(){
     let armyTroops = this.getRandomArmyTroops();
     let finalRecruitingTics = this.getRandomRecruitingTicsByArmyTroops(armyTroops);
-    console.log('finalRecruitingTics', finalRecruitingTics);
+    /* console.log(`${this.name} enviará un nuevo ejército en ${finalRecruitingTics} tics`); */
     addEvent(finalRecruitingTics, this.setNewArmy);
   }
 
@@ -155,10 +176,10 @@ class DBState {
       fullRoute
     });
     DB.armies.push(newArmy);
-    this.armies.push(newArmy);
+    this.currentArmies.push(newArmy);
     newArmy.moveArmy();
   }
-
+  
   setNewArmy = () => {
     if(this.inWar){
       const targetLocation = this.getRandomTargetLocation();
@@ -177,6 +198,7 @@ class DBState {
         let bDistance = STORAGE.map.distance([ targetLocation.latitude, targetLocation.longitude ], [ b.latitude, b.longitude ]);
         return aDistance - bDistance;
       })?.[0] || null;
+      /* console.log(`Obteniendo ruta de ejército desde un territorio anfitrión hacia ${targetLocation.name} (${targetLocation.currentState.name})`); */
       const routeLocations = getArmyRoute(targetLocation, currentAreaLocations, (l) => l.defaultTroops >= armyTroops);
       const fullRoute = routeLocations.reduce((route, location, i) => {
         route.push(location);
@@ -186,9 +208,7 @@ class DBState {
         return route;
       }, []);
       this.recruitArmy(recruitableLocations, armyTroops);
-      this.createNewArmy(departureLocation, targetLocation, armyTroops, fullRoute)
-      /* TODO Eventos de ataque */
-      /* TODO Eventos de próximos ataques */
+      this.createNewArmy(departureLocation, targetLocation, armyTroops, fullRoute);
       this.initArmyRecruiting();
     }
   }

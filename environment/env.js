@@ -8,7 +8,7 @@ var ENV = {
     attribution: '© OpenStreetMap'
   },
   circle: {
-    radius: 6,
+    radius: 135,
     defaultColor: 'blue',
     selectedColor: 'magenta',
     weight: 2,
@@ -47,5 +47,7 @@ var ENV = {
   minRecruitableTroopPercent: 0.1, /* Proporción mínima de las tropas de una localización que no pueden ser reclutadas (destinadas sólo a defensa) */
   armyLandMetersPerTic: 3000, /* Metros terrestres máximos que recorre un ejército por tic */
   armySeaMetersPerTic: 10000, /* Metros marítimos máximos que recorre un ejército por tic */
-  armyLocationRestTics: 6 /* Tics que ocupa un ejército en descansar cuando pasa por una localización */
+  armyLocationRestTics: 6, /* Tics que ocupa un ejército en descansar cuando pasa por una localización */
+  minDeadTroopsPerTic: 5, /* Número mínimo de tropas de un bando que deben morir por cada tic durante una batalla */
+  ticsPerBattleTurn: 3, /* Tics que dura un turno en una batalla */
 }

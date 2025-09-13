@@ -18,9 +18,6 @@ try {
     console.log('DB.links', DB.links.getAll());
     console.log('DB.links', DB.links.getRawData());
   });
-
-  /* RENDER POLYGONS */
-  DB.states.map(state => renderStatePolygons(state));
   
   /* RENDER LINKS */
   DB.links.map(link => renderLinkLine(link));

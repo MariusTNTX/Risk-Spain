@@ -4,7 +4,7 @@ function initialiceTimer() {
     try {
       let eventsToExecute = STORAGE.eventList['e' + STORAGE.currentTic];
       if(!!eventsToExecute && eventsToExecute.length) {
-        console.log('eventsToExecute at ', STORAGE.currentTic, eventsToExecute);
+        /* console.log('eventsToExecute at ', STORAGE.currentTic, eventsToExecute); */
         eventsToExecute.map(executeEvent => executeEvent());
         delete STORAGE.eventList['e' + STORAGE.currentTic];
       }

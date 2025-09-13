@@ -36,14 +36,14 @@ class DBRelationship {
   declareWar(){
     this.score = ENV.averageWarRelationshipScore;
     this.inWar = true;
-    console.log(`A war has been declared between ${this.states[0].name} and ${this.states[1].name}:`, this);
+    console.log(`Se declara la guerra entre ${this.states[0].name} y ${this.states[1].name}:`);
     this.states.map(s => s.checkConflictSituation());
   }
   
   declarePeace(){
     this.score = ENV.averagePeaceRelationshipScore;
     this.inWar = false;
-    console.log(`Peace has been declared between ${this.states[0].name} and ${this.states[1].name}:`, this);
+    console.log(`Se declara la paz entre ${this.states[0].name} y ${this.states[1].name}:`);
     this.states.map(s => s.checkConflictSituation());
   }
 }

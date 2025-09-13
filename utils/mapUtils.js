@@ -16,8 +16,8 @@ function renderLocationCircle(location) {
     </div>
   `;
   location.circle = L.circle([location.latitude, location.longitude], {
-    radius: Math.sqrt(location.population) * ENV.circle.radius,
-    color: location.province.state.color || ENV.circle.defaultColor,
+    radius: Math.sqrt(location.currentTroops) * ENV.circle.radius,
+    color: location.currentState.color || ENV.circle.defaultColor,
     weight: ENV.circle.weight,
     fillOpacity: ENV.circle.fillOpacity
   }).addTo(STORAGE.map).bindPopup(popupContent);
@@ -70,18 +70,25 @@ function renderLinkLine(link) {
 }
 
 function renderStatePolygons(state) {
-  state.currentPolygons.map((polygon, i) => {
-    L.geoJSON(polygon, {
+  state.currentPolygons.forEach((area, i) => {
+    if(area.geoJSON){
+      area.geoJSON.clearLayers();
+    } else {
+      area.geoJSON = L.layerGroup().addTo(STORAGE.map);
+    }
+    const newGeoJSON = L.geoJSON(area.polygon, {
       style: { color: state.color, weight: ENV.statePolygon.weight, fillOpacity: ENV.statePolygon.fillOpacity }
     }).addTo(STORAGE.map).bindPopup(`
       <h2>${state.name}</h2>
       ${
         state.currentPolygons.length > 1 
-        ? `<h3 style="text-align: center">Zona ${i + 1} de ${state.currentPolygons.length + 1}</h3>` 
+        ? `<h3 style="text-align: center">Zona ${i + 1} de ${state.currentPolygons.length}</h3>` 
         : ''
       }
     `);
-  })
+    area.geoJSON.addLayer(newGeoJSON);
+    return area;
+  });
 }
 
 function renderArmySquare(army) {
