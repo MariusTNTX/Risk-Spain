@@ -64,46 +64,64 @@ class DBLocation {
     console.log('-------------------------------------------------------------');
     console.log(`Turno de batalla en ${this.name} (${this.currentState.name}):`);
     const battles = this.getBattles();
-    console.log(`Lista de enfrentamientos: `, battles);
-
+    !!battles?.length 
+      ? console.log(`Lista de enfrentamientos: `, battles)
+      : console.error(`Sin enfrentamientos: `, battles);
     let finalWinner = null;
-    battles.map(battleArmies => {
-      let winner = this.confrontArmies(battleArmies[0], battleArmies[1]);
-      if(!finalWinner && !!winner){
-        finalWinner = winner;
+
+    for(let battleArmies of battles) {
+      const battleWinner = this.confrontArmies(battleArmies[0], battleArmies[1]);
+      console.log(`- battleWinner`, battleWinner);
+      this.currentArmies = this.currentArmies.filter(a => {
+        if(a.currentTroops) renderArmySquare(a);
+        else a.die();
+        return !!a.currentTroops;
+      });
+      console.log(`- currentArmies`, this.currentArmies);
+      if(!finalWinner && !!battleWinner){
+        const winnerIsTerritory = battleWinner === this;
+        const winnerIsEnemy = winnerIsTerritory ? false : battleWinner.state !== this.currentState;
+        const enemiesLeft = this.currentArmies.some(army => army.state !== this.currentState);
+        console.log(`Vencedor del enfrentamiento: ${winnerIsTerritory ? 'el territorio' : `el ejército ${battleWinner.number} de ${battleWinner.state.name}`}`);
+        console.log(`- winnerIsTerritory`, winnerIsTerritory);
+        console.log(`- this.currentTroops`, this.currentTroops);
+        console.log(`- winnerIsEnemy`, winnerIsEnemy);
+        console.log(`- enemiesLeft`, enemiesLeft);
+        if(winnerIsTerritory && this.currentTroops && !enemiesLeft){
+          finalWinner = battleWinner;
+          console.log(`Vencedor final: El territorio`);
+          break;
+        } else if(!winnerIsTerritory && winnerIsEnemy && !this.currentTroops && enemiesLeft){
+          finalWinner = battleWinner;
+          console.log(`Vencedor final: El ejército invasor ${finalWinner.number} de ${finalWinner.state.name}`);
+          break;
+        } else if(!winnerIsTerritory && !winnerIsEnemy && !enemiesLeft){
+          finalWinner = battleWinner;
+          console.log(`Vencedor final: El ejército defensor ${finalWinner.number} de ${finalWinner.state.name}`);
+          break;
+        }
       }
-      return battleArmies;
-    });
-
-    this.currentArmies = this.currentArmies.filter(a => {
-      if(a.currentTroops) renderArmySquare(a);
-      else a.die();
-      return !!a.currentTroops;
-    });
-
-    /* console.log(`Ejércitos restantes:`, this.currentArmies); */
-    if(!this.currentArmies.length && !finalWinner){
-      finalWinner = this;
     }
 
     if(finalWinner){
-      console.log(`Terminan los turnos. Termina el ataque sobre ${this.name} (${this.currentState.name}). El vencedor es ${finalWinner === this ? 'el territorio' : `el ejército ${finalWinner.number} de ${finalWinner.state.name}`}`);
+      const winnerIsTerritory = finalWinner === this;
+      const winnerIsEnemy = winnerIsTerritory ? false : finalWinner.state !== this.currentState;
+      console.log(`Terminan los turnos. Termina el ataque sobre ${this.name} (${this.currentState.name}). El vencedor es ${winnerIsTerritory ? 'el territorio' : `el ejército ${finalWinner.number} de ${finalWinner.state.name}`}`);
       this.underAttack = false;
+      if(!this.currentTroops && winnerIsEnemy){
+        this.resetState(finalWinner);
+      }
       this.currentArmies.forEach(a => {
         a.inBattle = false;
+        a.sendMoveArmyEvent();
         return a;
       });
-      !this.currentTroops && finalWinner === this && console.warn('Gana el territorio con !currentTroops = false. currentTroops:', this.currentTroops);
-      if(!this.currentTroops && finalWinner !== this){
-        const defeatedState = this.currentState;
-        this.resetState(finalWinner);
-        this.currentArmies.filter(a => a.state !== defeatedState).map(a => a.sendMoveArmyEvent());
-      }
     } else {
       console.log(`Continúan los turnos`);
       addEvent(ENV.ticsPerBattleTurn, this.initBattleTurn);
     }
 
+    console.log('-------------------------------------------------------------');
     renderLocationCircle(this);
   }
 
@@ -130,7 +148,12 @@ class DBLocation {
   }
 
   confrontArmies(army1, army2){
-    if(!army1.currentTroops || !army2.currentTroops) return;
+    if(!army1.currentTroops || !army2.currentTroops){
+      console.error('Iniciando un enfrentamiento con algún contrincante sin tropas: ', army1, army2);
+    }
+    if(!army1.currentTroops && army2.currentTroops) return army2;
+    if(army1.currentTroops && !army2.currentTroops) return army1;
+
     const troopsToConfront = ENV.minDeadTroopsPerTic * ENV.ticsPerBattleTurn;
     let troops1 = army1.currentTroops >= troopsToConfront ? troopsToConfront : army1.currentTroops;
     army1.currentTroops -= troops1;
@@ -180,6 +203,7 @@ class DBLocation {
     console.log(`El ejército donante reduce sus tropas a ${winnerArmy.currentTroops} (de ${winnerArmy.originalTroops} tropas`);
     
     if(!winnerArmy.currentTroops){
+      this.currentArmies = this.currentArmies.filter(army => army.currentTroops);
       winnerArmy.die();
     }
   }

@@ -8,7 +8,7 @@ class DBRelationship {
   
   constructor(rawObj) {
     this.states = Array.isArray(rawObj.states) ? rawObj.states : [];
-    this.score = Math.floor(Math.random() * ENV.inflexRelationshipScore) + (ENV.maxRelationshipScore - ENV.inflexRelationshipScore + 1);
+    this.score = Math.floor(Math.random() * (ENV.maxInitialRelationshipScore - ENV.minInitialRelationshipScore + 1)) + ENV.minInitialRelationshipScore;
   }
 
   calcProperties(){

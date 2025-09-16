@@ -18,6 +18,13 @@ try {
     console.log('DB.links', DB.links.getAll());
     console.log('DB.links', DB.links.getRawData());
   });
+
+  Object.entries(ENV.panes).map(([_, pane]) => {
+    if(!STORAGE.map.getPane(pane.name)){
+      STORAGE.map.createPane(pane.name);
+      STORAGE.map.getPane(pane.name).style.zIndex = pane.zIndex;
+    }
+  });
   
   /* RENDER LINKS */
   DB.links.map(link => renderLinkLine(link));

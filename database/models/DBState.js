@@ -65,7 +65,6 @@ class DBState {
     this.totalPopulation += location.population;
     this.locations.push(location);
     this.updateCurrentAreas();
-    renderStatePolygons(this);
     DB.states.updateTargetLocations();
   }
   
@@ -80,7 +79,6 @@ class DBState {
       this.locations.splice(index, 1);
     }
     this.updateCurrentAreas();
-    renderStatePolygons(this);
   }
 
   /* GETS */
@@ -200,6 +198,7 @@ class DBState {
       })?.[0] || null;
       /* console.log(`Obteniendo ruta de ejército desde un territorio anfitrión hacia ${targetLocation.name} (${targetLocation.currentState.name})`); */
       const routeLocations = getArmyRoute(targetLocation, currentAreaLocations, (l) => l.defaultTroops >= armyTroops);
+      !routeLocations && console.error(`${this.name} no puede obtener una ciudad anfitriona para un ejército de ${armyTroops} tropas hacia ${targetLocation.name} (${targetLocation.currentState.name})`, targetLocation, currentAreaLocations);
       const fullRoute = routeLocations.reduce((route, location, i) => {
         route.push(location);
         if(i + 1 < routeLocations.length){

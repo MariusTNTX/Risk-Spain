@@ -19,7 +19,8 @@ function renderLocationCircle(location) {
     radius: Math.sqrt(location.currentTroops) * ENV.circle.radius,
     color: location.currentState.color || ENV.circle.defaultColor,
     weight: ENV.circle.weight,
-    fillOpacity: ENV.circle.fillOpacity
+    fillOpacity: ENV.circle.fillOpacity,
+    pane: ENV.panes.locationsPane.name
   }).addTo(STORAGE.map).bindPopup(popupContent);
 
   location.circle.on("contextmenu", () => {
@@ -65,11 +66,16 @@ function renderLinkLine(link) {
   link.distance = STORAGE.map.distance(...coords);
   link.line = L.polyline(coords, { 
     color: link.isMaritim ? ENV.line.seaColor : ENV.line.landColor, 
-    weight: ENV.line.weight 
+    weight: ENV.line.weight,
+    pane: ENV.panes.linksPane.name
   }).addTo(STORAGE.map);
 }
 
 function renderStatePolygons(state) {
+  if(!STORAGE.map.getPane(ENV.panes.areasPane.name)){
+    STORAGE.map.createPane(ENV.panes.areasPane.name);
+    STORAGE.map.getPane(ENV.panes.areasPane.name).style.zIndex = ENV.panes.areasPane.zIndex;
+  }
   state.currentPolygons.forEach((area, i) => {
     if(area.geoJSON){
       area.geoJSON.clearLayers();
@@ -77,7 +83,8 @@ function renderStatePolygons(state) {
       area.geoJSON = L.layerGroup().addTo(STORAGE.map);
     }
     const newGeoJSON = L.geoJSON(area.polygon, {
-      style: { color: state.color, weight: ENV.statePolygon.weight, fillOpacity: ENV.statePolygon.fillOpacity }
+      style: { color: state.color, weight: ENV.statePolygon.weight, fillOpacity: ENV.statePolygon.fillOpacity },
+      pane: ENV.panes.areasPane.name
     }).addTo(STORAGE.map).bindPopup(`
       <h2>${state.name}</h2>
       ${
@@ -99,7 +106,8 @@ function renderArmySquare(army) {
   const distance = Math.sqrt(army.currentTroops) * ENV.armyPolygon.size;
   const polygon = createSquarePolygon(position, distance);
   army.polygon = L.geoJSON(polygon, {
-    style: { color: ENV.armyPolygon.color, fillColor: army.state.color, weight: ENV.armyPolygon.weight, fillOpacity: ENV.armyPolygon.fillOpacity }
+    style: { color: ENV.armyPolygon.color, fillColor: army.state.color, weight: ENV.armyPolygon.weight, fillOpacity: ENV.armyPolygon.fillOpacity },
+    pane: ENV.panes.armyPane.name
   }).addTo(STORAGE.map).bindPopup(`
     <div class="popup-content">
       <b>Estado</b>: ${army.state.name}<br/>

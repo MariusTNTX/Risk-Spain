@@ -29,6 +29,12 @@ var ENV = {
     weight: 3, 
     fillOpacity: 0.3
   },
+  panes: {
+    armyPane: { name: 'armyPane', zIndex: 600 },
+    locationsPane: { name: 'locationsPane', zIndex: 500 },
+    areasPane: { name: 'areasPane', zIndex: 400 },
+    linksPane: { name: 'linksPane', zIndex: 300 },
+  },
   milisecondsPerTic: 1000, /* Milisegundos que dura un tic de juego */
   troopsPerInhabitant: 1 / 500, /* Proporción de tropas por habitantes reales */
   minDefaultTroopsByLocation: 5, /* Tropas minimas por localización (aplicado en municipios pequeños) */
@@ -37,6 +43,8 @@ var ENV = {
   defaultTroopPercentPerTroopDeployment: 1 / 1000, /* Proporción de nuevas tropas por cada tropa por defecto del mundo */
   ticsPerRelationshipUpdate: 2, /* Tics necesarios para una actualización de las relaciones entre potencias */
   maxRelationshipScore: 100, /* Puntuación máxima de una relación entre dos potencias */
+  maxInitialRelationshipScore: 66, /* Puntuación máxima incial de una relación entre dos potencias */
+  minInitialRelationshipScore: 51, /* Puntuación mínima incial de una relación entre dos potencias */
   inflexRelationshipScore: 50, /* Puntuación límite que determina la paz entre dos potencias (por debajo de esa puntuación se declara una guerra) */
   averagePeaceRelationshipScore: 75, /* Puntuación que se establece cuando dos potencias pasan de la guerra a la paz */
   averageWarRelationshipScore: 25, /* Puntuación que se establece cuando dos potencias pasan de la paz a la guerra */
