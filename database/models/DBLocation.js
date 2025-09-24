@@ -199,8 +199,8 @@ class DBLocation {
     const locationTroops = winnerArmy.currentTroops >= this.defaultTroops ? this.defaultTroops : winnerArmy.currentTroops;
     this.currentTroops = locationTroops;
     winnerArmy.currentTroops -= locationTroops;
-    console.log(`El territorio aumenta sus tropas en ${locationTroops} (de ${this.defaultTroops} tropas`);
-    console.log(`El ejército donante reduce sus tropas a ${winnerArmy.currentTroops} (de ${winnerArmy.originalTroops} tropas`);
+    console.log(`El territorio ${this.name} (${this.currentState.name}) aumenta sus tropas en ${locationTroops} (de ${this.defaultTroops} tropas)`, this);
+    console.log(`El ejército donante ${winnerArmy.number} de ${winnerArmy.state.name} reduce sus tropas a ${winnerArmy.currentTroops} (de ${winnerArmy.originalTroops} tropas)`, winnerArmy);
     
     if(!winnerArmy.currentTroops){
       this.currentArmies = this.currentArmies.filter(army => army.currentTroops);

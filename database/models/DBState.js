@@ -131,10 +131,8 @@ class DBState {
     }
   }
 
-  initArmyRecruiting(){
-    let armyTroops = this.getRandomArmyTroops();
-    let finalRecruitingTics = this.getRandomRecruitingTicsByArmyTroops(armyTroops);
-    /* console.log(`${this.name} enviará un nuevo ejército en ${finalRecruitingTics} tics`); */
+  initArmyRecruiting(tics = null){
+    let finalRecruitingTics = tics || this.getRandomRecruitingTicsByArmyTroops(this.getRandomArmyTroops());
     addEvent(finalRecruitingTics, this.setNewArmy);
   }
 
@@ -198,17 +196,22 @@ class DBState {
       })?.[0] || null;
       /* console.log(`Obteniendo ruta de ejército desde un territorio anfitrión hacia ${targetLocation.name} (${targetLocation.currentState.name})`); */
       const routeLocations = getArmyRoute(targetLocation, currentAreaLocations, (l) => l.defaultTroops >= armyTroops);
-      !routeLocations && console.error(`${this.name} no puede obtener una ciudad anfitriona para un ejército de ${armyTroops} tropas hacia ${targetLocation.name} (${targetLocation.currentState.name})`, targetLocation, currentAreaLocations);
-      const fullRoute = routeLocations.reduce((route, location, i) => {
-        route.push(location);
-        if(i + 1 < routeLocations.length){
-          route.push(location.links.find(link => link.locations.includes(location) && link.locations.includes(routeLocations[i+1])));
-        }
-        return route;
-      }, []);
-      this.recruitArmy(recruitableLocations, armyTroops);
-      this.createNewArmy(departureLocation, targetLocation, armyTroops, fullRoute);
-      this.initArmyRecruiting();
+      !routeLocations && console.error(`${this.name} no puede obtener una ciudad anfitriona para un ejército de ${armyTroops} tropas hacia ${targetLocation.name} (${targetLocation.currentState.name})`, targetLocation);
+      !routeLocations && console.error('currentAreaLocations:', currentAreaLocations);
+      if(routeLocations){
+        const fullRoute = routeLocations.reduce((route, location, i) => {
+          route.push(location);
+          if(i + 1 < routeLocations.length){
+            route.push(location.links.find(link => link.locations.includes(location) && link.locations.includes(routeLocations[i+1])));
+          }
+          return route;
+        }, []);
+        this.recruitArmy(recruitableLocations, armyTroops);
+        this.createNewArmy(departureLocation, targetLocation, armyTroops, fullRoute);
+        this.initArmyRecruiting();
+      } else {
+        this.initArmyRecruiting(2);
+      }
     }
   }
 }
